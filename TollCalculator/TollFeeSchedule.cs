@@ -1,6 +1,6 @@
 namespace TollCalculator;
 
-public static class TollFeeSchedule
+public class TollFeeSchedule(IHolidayProvider holidayProvider)
 {
     private static readonly (TimeOnly Start, TimeOnly End, int Fee)[] FeeSchedule =
     [
@@ -26,38 +26,13 @@ public static class TollFeeSchedule
         return 0;
     }
     
-    public static bool IsTollFreeDate(DateTime date)
+    public bool IsTollFreeDate(DateTime date)
     {
         if (IsWeekend(date.DayOfWeek)) 
             return true;
 
-        if (IsHoliday(date))
+        if (holidayProvider.IsHoliday(date))
             return true;
-        
-        return false;
-    }
-    
-    //TODO nuget for holiday dates
-    private static bool IsHoliday(DateTime date)
-    {
-        int year = date.Year;
-        int month = date.Month;
-        int day = date.Day;
-
-        if (year == 2013)
-        {
-            if (month == 1 && day == 1 ||
-                month == 3 && (day == 28 || day == 29) ||
-                month == 4 && (day == 1 || day == 30) ||
-                month == 5 && (day == 1 || day == 8 || day == 9) ||
-                month == 6 && (day is 5 or 6 || day == 21) ||
-                month == 7 ||
-                month == 11 && day == 1 ||
-                month == 12 && (day == 24 || day == 25 || day == 26 || day == 31))
-            {
-                return true;
-            }
-        }
         
         return false;
     }

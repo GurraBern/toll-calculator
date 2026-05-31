@@ -4,6 +4,8 @@ namespace TollCalculator.Tests.ComponentTests;
 
 public class TollCalculatorTests
 {
+    private static TollCalculator CreateSut() => new(new TollFeeSchedule(new HolidayProvider()));
+    
     [Test]
     public void Highest_toll_within_the_hour_is_applied()
     {
@@ -16,7 +18,9 @@ public class TollCalculatorTests
             new(2026, 5, 29, 7, 0, 0),
         ];
         
-        var tollFee = TollCalculator.GetTollFee(car, dates);
+        var sut = CreateSut();
+        
+        var tollFee = sut.GetTollFee(car, dates);
         
         Assert.That(tollFee, Is.EqualTo(18));
     }
@@ -44,12 +48,14 @@ public class TollCalculatorTests
             new(2026, 5, 29, 10, 30, 0),
             new(2026, 5, 29, 11, 0, 0),
         ];
+
+        var tollCalculator = CreateSut();
         
-        var tollFee = TollCalculator.GetTollFee(vehicle, dates);
+        var tollFee = tollCalculator.GetTollFee(vehicle, dates);
         
         Assert.That(tollFee, Is.EqualTo(60));
     }
-    
+
     [TestCase("Motorbike")]
     [TestCase("Tractor")]
     [TestCase("EmergencyVehicle")]
@@ -71,7 +77,9 @@ public class TollCalculatorTests
             new(2026, 5, 29, 11, 0, 0),
         ];
         
-        var tollFee = TollCalculator.GetTollFee(vehicle, dates);
+        var sut = CreateSut();
+        
+        var tollFee = sut.GetTollFee(vehicle, dates);
         
         Assert.That(tollFee, Is.EqualTo(0));
     }
@@ -93,7 +101,9 @@ public class TollCalculatorTests
             new(2026, 5, 30, 11, 0, 0),
         ];
         
-        var tollFee = TollCalculator.GetTollFee(vehicle, dates);
+        var sut = CreateSut();
+        
+        var tollFee = sut.GetTollFee(vehicle, dates);
         
         Assert.That(tollFee, Is.EqualTo(0));
     }
@@ -103,7 +113,9 @@ public class TollCalculatorTests
     [Test]
     public void EmptyDates()
     {
-        var tollFee = TollCalculator.GetTollFee(new Car(), []);
+        var sut = CreateSut();
+        
+        var tollFee = sut.GetTollFee(new Car(), []);
         
         Assert.That(tollFee, Is.EqualTo(0));
     }
@@ -141,8 +153,9 @@ public class TollCalculatorTests
             new(2026, 5, 29, 6, 30, 0),
             new(2026, 5, 29, 7, 0, 0),
         ];
+        var sut = CreateSut();
         
-        var tollFee = TollCalculator.GetTollFee(car, dates);
+        var tollFee = sut.GetTollFee(car, dates);
         
         Assert.That(tollFee, Is.GreaterThan(60)); //TODO set exact toll fee
     }
@@ -152,8 +165,9 @@ public class TollCalculatorTests
     {
         var car = new Car();
         var date = new DateTime(2026, 5, 27, 8, 0, 0);
+        var sut = CreateSut();
 
-        var tollFee = TollCalculator.GetTollFee(car, date);
+        var tollFee = sut.GetTollFee(car, date);
 
         Assert.That(tollFee, Is.EqualTo(18));
     }
@@ -163,8 +177,9 @@ public class TollCalculatorTests
     {
         var car = new Car();
         var date = new DateTime(2026, 5, 31, 6, 0, 0);
+        var sut = CreateSut();
         
-        var tollFee = TollCalculator.GetTollFee(car, date);
+        var tollFee = sut.GetTollFee(car, date);
         
         Assert.That(tollFee, Is.EqualTo(0));
     }
@@ -179,8 +194,9 @@ public class TollCalculatorTests
     {
         var vehicle = VehicleFactory.Create(vehicleName);
         var date = new DateTime(2026, 5, 29, 6, 0, 0);
+        var sut = CreateSut();
 
-        var tollFee = TollCalculator.GetTollFee(vehicle, date);
+        var tollFee = sut.GetTollFee(vehicle, date);
 
         Assert.That(tollFee, Is.EqualTo(0));
     }

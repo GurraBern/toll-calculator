@@ -2,12 +2,12 @@
 
 namespace TollCalculator;
 
-public static class TollCalculator
+public class TollCalculator(TollFeeSchedule tollFeeSchedule)
 {
     private const int MaxTotalFeePerDay = 60;
 
     //TODO rewrite so we can handle more than 24 hours!!!
-    public static int GetTollFee(IVehicle vehicle, DateTime[] dates)
+    public int GetTollFee(IVehicle vehicle, DateTime[] dates)
     {
         if (dates.Length == 0)
             return 0;
@@ -40,7 +40,7 @@ public static class TollCalculator
         return Math.Min(totalFee, MaxTotalFeePerDay);//TODO create a method for getting total Per day so that we can support multiday!!!!
     }
 
-    private static int GetHighestTollFee(IVehicle vehicle, List<DateTime> timestamps)
+    private int GetHighestTollFee(IVehicle vehicle, List<DateTime> timestamps)
     {
         var tollFees = timestamps
             .Select(date => GetTollFee(vehicle, date))
@@ -49,9 +49,9 @@ public static class TollCalculator
         return tollFees.Max();//TODO borde vi checka att listan inte är tom?
     }
 
-    public static int GetTollFee(IVehicle vehicle, DateTime date)
+    public int GetTollFee(IVehicle vehicle, DateTime date)
     {
-        if (TollFeeSchedule.IsTollFreeDate(date))
+        if (tollFeeSchedule.IsTollFreeDate(date))
             return 0;
 
         if (vehicle.IsTollFree())

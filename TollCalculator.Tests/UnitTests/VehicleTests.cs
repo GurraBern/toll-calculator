@@ -12,7 +12,7 @@ public class VehicleTests
     [TestCase("ForeignVehicle", true)]
     [TestCase("MilitaryVehicle", true)]
     [TestCase("Car", false)]
-    public void IsTollFreeVehicle_ReturnsExpected_ForVehicleType(string vehicleType, bool expected)
+    public void IsTollFreeVehicle_Returns_Expected_ForVehicleType(string vehicleType, bool expected)
     {
         var vehicle = Create(vehicleType);
 

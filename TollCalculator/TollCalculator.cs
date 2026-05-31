@@ -2,52 +2,59 @@
 
 namespace TollCalculator;
 
-//TODO this class has too much responsiblity 
 public static class TollCalculator
 {
+    private const int MaxTotalFeePerDay = 60;
 
-    /**
-     * Calculate the total toll fee for one day
-     *
-     * @param vehicle - the vehicle
-     * @param dates   - date and time of all passes on one day
-     * @return - the total toll fee for that day
-     */
-
-    //TODO rewrite
+    //TODO rewrite so we can handle more than 24 hours!!!
     public static int GetTollFee(IVehicle vehicle, DateTime[] dates)
     {
-        DateTime intervalStart = dates[0];
-        int totalFee = 0;
-        foreach (DateTime date in dates)
-        {
-            int nextFee = GetTollFee(vehicle, date);
-            int tempFee = GetTollFee(vehicle, intervalStart);
-
-            long diffInMillies = date.Millisecond - intervalStart.Millisecond;
-            long minutes = diffInMillies/1000/60;
-
-            if (minutes <= 60)
-            {
-                if (totalFee > 0) totalFee -= tempFee;
-                if (nextFee >= tempFee) tempFee = nextFee;
-                totalFee += tempFee;
-            }
-            else
-            {
-                totalFee += nextFee;
-            }
-        }
-        if (totalFee > 60) totalFee = 60;
-        return totalFee;
-    }
-    
-    private static int GetTollFee(IVehicle vehicle, DateTime date)
-    {
-        if (TollFeeSchedule.IsTollFreeDate(date)) 
+        if (dates.Length == 0)
             return 0;
-        
-        if (vehicle.IsTollFree()) 
+
+        var timeStamps = dates
+            .OrderBy(x => x.Date)
+            .ToList();
+
+        var totalFee = 0;
+        var currentIntervalTimestamps = new List<DateTime>();
+        var intervalStart = timeStamps.First();
+
+        foreach (var timestamp in timeStamps)
+        {
+            currentIntervalTimestamps.Add(timestamp);
+
+            var minutesPassed = (timestamp - intervalStart).TotalMinutes;
+            if ((minutesPassed >= 60) is false)
+                continue;
+
+            totalFee += GetHighestTollFee(vehicle, currentIntervalTimestamps);
+
+            currentIntervalTimestamps.Clear();
+            intervalStart = timestamp;
+        }
+
+        if (currentIntervalTimestamps.Count > 0)
+            totalFee += GetHighestTollFee(vehicle, currentIntervalTimestamps);
+
+        return Math.Min(totalFee, MaxTotalFeePerDay);//TODO create a method for getting total Per day so that we can support multiday!!!!
+    }
+
+    private static int GetHighestTollFee(IVehicle vehicle, List<DateTime> timestamps)
+    {
+        var tollFees = timestamps
+            .Select(date => GetTollFee(vehicle, date))
+            .ToList();
+
+        return tollFees.Max();//TODO borde vi checka att listan inte är tom?
+    }
+
+    public static int GetTollFee(IVehicle vehicle, DateTime date)
+    {
+        if (TollFeeSchedule.IsTollFreeDate(date))
+            return 0;
+
+        if (vehicle.IsTollFree())
             return 0;
 
         var time = TimeOnly.FromDateTime(date);

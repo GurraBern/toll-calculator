@@ -1,10 +1,7 @@
-﻿using TollCalculator.Vehicles;
-
-namespace TollCalculator.Tests.UnitTests;
+﻿namespace TollCalculator.Tests.UnitTests;
 
 public class VehicleTests
 {
-
     [TestCase("Motorbike", true)]
     [TestCase("Tractor", true)]
     [TestCase("EmergencyVehicle", true)]
@@ -14,20 +11,22 @@ public class VehicleTests
     [TestCase("Car", false)]
     public void IsTollFreeVehicle_Returns_Expected_ForVehicleType(string vehicleType, bool expected)
     {
-        var vehicle = Create(vehicleType);
+        var vehicle = VehicleFactory.Create(vehicleType);
 
         Assert.That(vehicle.IsTollFree(), Is.EqualTo(expected));
     }
     
-    private static IVehicle Create(string vehicleType) => vehicleType switch
+    [TestCase("Motorbike")]
+    [TestCase("Tractor")]
+    [TestCase("EmergencyVehicle")]
+    [TestCase("DiplomaticVehicle")]
+    [TestCase("ForeignVehicle")]
+    [TestCase("MilitaryVehicle")]
+    [TestCase("Car")]
+    public void GetVehicleType_Returns_Expected_VehicleType(string expected)
     {
-        "Car" => new Car(),
-        "Motorbike" => new Motorbike(),
-        "Tractor" => new Tractor(),
-        "EmergencyVehicle" => new EmergencyVehicle(),
-        "DiplomaticVehicle" => new DiplomaticVehicle(),
-        "ForeignVehicle" => new ForeignVehicle(),
-        "MilitaryVehicle" => new MilitaryVehicle(),
-        _ => throw new ArgumentException($"Unknown vehicle type: {vehicleType}", nameof(vehicleType))
-    };
+        var vehicle = VehicleFactory.Create(expected);
+
+        Assert.That(vehicle.GetVehicleType(), Is.EqualTo(expected));
+    }
 }

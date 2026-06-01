@@ -1,8 +1,7 @@
 namespace TollCalculator;
 
-public class HolidayProvider : IHolidayProvider
+public class HolidayProviderOld : IHolidayProvider
 {
-    //TODO nuget for holiday dates
     public bool IsHoliday(DateTime date)
     {
         int year = date.Year;

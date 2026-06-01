@@ -1,10 +1,11 @@
+using PublicHoliday;
 using TollCalculator.Vehicles;
 
 namespace TollCalculator.Tests.ComponentTests;
 
 public class TollCalculatorTests
 {
-    private static TollCalculator CreateSut() => new(new TollFeeSchedule(new HolidayProvider()));
+    private static TollCalculator CreateSut() => new(new TollFeeSchedule(new ExternalHolidayProvider(new SwedenPublicHoliday())));
     
     [Test]
     public void Highest_toll_within_the_hour_is_applied()
@@ -169,7 +170,7 @@ public class TollCalculatorTests
 
         var tollFee = sut.GetTollFee(car, date);
 
-        Assert.That(tollFee, Is.EqualTo(18));
+        Assert.That(tollFee, Is.EqualTo(13));
     }
 
     [Test]

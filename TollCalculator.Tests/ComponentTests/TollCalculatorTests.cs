@@ -1,4 +1,5 @@
 using PublicHoliday;
+using TollCalculator.Holidays;
 using TollCalculator.Vehicles;
 
 namespace TollCalculator.Tests.ComponentTests;
@@ -120,9 +121,32 @@ public class TollCalculatorTests
     }
     
     [Test]
-    public void Dates_in_weird_order()
+    public void Dates_in_weird_order_should_give_same_fee_as_sorted()
     {
-        //TODO kommer alltid dates in i ordning? Borde vi sortera vad händer om vi inte gör det???? (skriv test!!!!) 
+        var car = new Car();
+
+        DateTime[] sorted =
+        [
+            new(2026, 5, 29, 6, 0, 0),
+            new(2026, 5, 29, 6, 30, 0),
+            new(2026, 5, 29, 7, 30, 0),
+            new(2026, 5, 29, 8, 0, 0),
+        ];
+
+        DateTime[] shuffled =
+        [
+            new(2026, 5, 29, 7, 30, 0),
+            new(2026, 5, 29, 6, 0, 0),
+            new(2026, 5, 29, 8, 0, 0),
+            new(2026, 5, 29, 6, 30, 0),
+        ];
+
+        var sut = CreateSut();
+
+        var sortedFee = sut.GetTollFee(car, sorted);
+        var shuffledFee = sut.GetTollFee(car, shuffled);
+
+        Assert.That(shuffledFee, Is.EqualTo(sortedFee));
     }
     
     [Test]

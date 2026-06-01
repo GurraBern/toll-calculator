@@ -6,15 +6,21 @@ public class TollCalculator(TollFeeSchedule tollFeeSchedule)
 {
     private const int MaxTotalFeePerDay = 60;
 
-    //TODO rewrite so we can handle more than 24 hours!!!
     public int GetTollFee(IVehicle vehicle, DateTime[] dates)
     {
-        if (dates.Length == 0)
+        if (dates.Length == 0 || vehicle.IsTollFree())
             return 0;
-
-        var timeStamps = dates
-            .OrderBy(x => x.Date)
+        
+        var tollDays = dates
+            .OrderBy(x => x)
+            .GroupBy(x => x.Date)
             .ToList();
+        
+        return tollDays.Sum(day =>
+            GetTollFeeForDay(day.ToList()));
+    }
+    private int GetTollFeeForDay(List<DateTime> timeStamps)
+    {
 
         var totalFee = 0;
         var currentIntervalTimestamps = new List<DateTime>();
@@ -28,36 +34,39 @@ public class TollCalculator(TollFeeSchedule tollFeeSchedule)
             if ((minutesPassed >= 60) is false)
                 continue;
 
-            totalFee += GetHighestTollFee(vehicle, currentIntervalTimestamps);
+            totalFee += GetHighestTollFee(currentIntervalTimestamps);
 
             currentIntervalTimestamps.Clear();
             intervalStart = timestamp;
         }
 
         if (currentIntervalTimestamps.Count > 0)
-            totalFee += GetHighestTollFee(vehicle, currentIntervalTimestamps);
+            totalFee += GetHighestTollFee(currentIntervalTimestamps);
 
-        return Math.Min(totalFee, MaxTotalFeePerDay);//TODO create a method for getting total Per day so that we can support multiday!!!!
+        return Math.Min(totalFee, MaxTotalFeePerDay);
     }
 
-    private int GetHighestTollFee(IVehicle vehicle, List<DateTime> timestamps)
+    private int GetHighestTollFee(List<DateTime> timestamps)
     {
-        var tollFees = timestamps
-            .Select(date => GetTollFee(vehicle, date))
-            .ToList();
-
-        return tollFees.Max();//TODO borde vi checka att listan inte är tom?
+        return timestamps
+            .Select(GetTollFee)
+            .Max();
     }
 
-    public int GetTollFee(IVehicle vehicle, DateTime date)
+    private int GetTollFee(DateTime date)
     {
         if (tollFeeSchedule.IsTollFreeDate(date))
             return 0;
 
+        var time = TimeOnly.FromDateTime(date);
+        return TollFeeSchedule.GetTollFee(time);       
+    }
+    
+    public int GetTollFee(IVehicle vehicle, DateTime date)
+    { 
         if (vehicle.IsTollFree())
             return 0;
-
-        var time = TimeOnly.FromDateTime(date);
-        return TollFeeSchedule.GetTollFee(time);
+        
+        return GetTollFee(date);
     }
 }

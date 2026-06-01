@@ -180,7 +180,7 @@ public class TollCalculatorTests
         
         var tollFee = sut.GetTollFee(car, dates);
         
-        Assert.That(tollFee, Is.GreaterThan(60)); //TODO set exact toll fee
+        Assert.That(tollFee, Is.EqualTo(78));
     }
 
     [Test]

@@ -17,14 +17,14 @@ public class TollCalculatorTests
         [
             new(2026, 5, 29, 6, 0, 0),
             new(2026, 5, 29, 6, 30, 0),
-            new(2026, 5, 29, 7, 0, 0),
+            new(2026, 5, 29, 6, 59, 0),
         ];
         
         var sut = CreateSut();
         
         var tollFee = sut.GetTollFee(car, dates);
         
-        Assert.That(tollFee, Is.EqualTo(18));
+        Assert.That(tollFee, Is.EqualTo(13));
     }
     
     [TestCase("Car")]
@@ -110,6 +110,25 @@ public class TollCalculatorTests
         Assert.That(tollFee, Is.EqualTo(0));
     }
     
+    [Test]
+    public void TollFee_outside_interval_hour()
+    {
+        var car = new Car();
+
+        DateTime[] dates =
+        [
+            new(2026, 5, 29, 6, 0, 0),
+            new(2026, 5, 29, 6, 30, 0),
+            new(2026, 5, 29, 7, 30, 0),
+        ];
+
+        var sut = CreateSut();
+
+        var tollFee = sut.GetTollFee(car, dates);
+
+        Assert.That(tollFee, Is.EqualTo(31));
+    }
+
     [Test]
     public void EmptyDates()
     {

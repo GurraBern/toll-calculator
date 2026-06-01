@@ -2,42 +2,31 @@ namespace TollCalculator.Tests.UnitTests;
 
 public class TollFeeScheduleTests
 {
-    //TODO lägg in fler edge cases!!!!!
-    [TestCase(5, 59, 0)]
-    [TestCase(6, 1, 8)]
-    [TestCase(6, 28, 8)]
-    [TestCase(6, 31, 13)]
-    [TestCase(6, 58, 13)]
-    [TestCase(7, 1, 18)]
-    [TestCase(7, 58, 18)]
-    [TestCase(8, 1, 13)]
-    [TestCase(8, 28, 13)]
-    [TestCase(8, 31, 8)]
-    [TestCase(8, 59, 8)]
-    [TestCase(9, 0, 8)]
-    [TestCase(9, 59, 8)]
-    [TestCase(10, 0, 8)]
-    [TestCase(10, 59, 8)]
-    [TestCase(11, 0, 8)]
-    [TestCase(11, 59, 8)]
-    [TestCase(12, 0, 8)]
-    [TestCase(12, 59, 8)]
-    [TestCase(13, 0, 8)]
-    [TestCase(13, 59, 8)]
-    [TestCase(14, 0, 8)]
-    [TestCase(14, 59, 8)]
-    [TestCase(15, 1, 13)]
-    [TestCase(15, 28, 13)]
-    [TestCase(15, 31, 18)]
-    [TestCase(15, 59, 18)]
-    [TestCase(16, 0, 18)]
-    [TestCase(16, 1, 18)]
-    [TestCase(16, 58, 18)]
-    [TestCase(17, 1, 13)]
-    [TestCase(17, 58, 13)]
-    public void GetTollFee_When_Given_Specific_Time_Returns_Expected_Fee(int hour, int minute, int expectedFee)
+    [TestCase(0, 0, 0, 0)]
+    [TestCase(5, 59, 59, 0)]
+    [TestCase(6, 0, 0, 8)]
+    [TestCase(6, 29, 59, 8)]
+    [TestCase(6, 30, 0, 13)]
+    [TestCase(6, 59, 59, 13)]
+    [TestCase(7, 0, 0, 18)]
+    [TestCase(7, 59, 59, 18)]
+    [TestCase(8, 0, 0, 13)]
+    [TestCase(8, 29, 59, 13)]
+    [TestCase(8, 30, 0, 8)]
+    [TestCase(14, 59, 59, 8)]
+    [TestCase(15, 0, 0, 13)]
+    [TestCase(15, 29, 59, 13)]
+    [TestCase(15, 30, 0, 18)]
+    [TestCase(16, 59, 59, 18)]
+    [TestCase(17, 0, 0, 13)]
+    [TestCase(17, 59, 59, 13)]
+    [TestCase(18, 0, 0, 8)]
+    [TestCase(18, 29, 59, 8)]
+    [TestCase(18, 30, 0, 0)]
+    [TestCase(23, 59, 59, 0)]
+    public void GetTollFee_When_Given_Specific_Time_Returns_Expected_Fee(int hour, int minute, int second, int expectedFee)
     {
-        var time = new TimeOnly(hour, minute, 1);
+        var time = new TimeOnly(hour, minute, second);
 
         var fee = TollFeeSchedule.GetTollFee(time);
 

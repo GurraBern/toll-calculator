@@ -109,8 +109,6 @@ public class TollCalculatorTests
         Assert.That(tollFee, Is.EqualTo(0));
     }
     
-    //TODO test som holidays (Easter, Christmas, Midsummer etc!!!)
-    
     [Test]
     public void EmptyDates()
     {

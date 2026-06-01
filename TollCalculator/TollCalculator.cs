@@ -15,9 +15,11 @@ public class TollCalculator(TollFeeSchedule tollFeeSchedule)
             .OrderBy(x => x)
             .GroupBy(x => x.Date)
             .ToList();
-        
-        return tollDays.Sum(day =>
+
+        var totalTollFee = tollDays.Sum(day => 
             GetTollFeeForDay(day.ToList()));
+        
+        return totalTollFee;
     }
     
     private int GetTollFeeForDay(List<DateTime> timeStamps)
@@ -37,10 +39,8 @@ public class TollCalculator(TollFeeSchedule tollFeeSchedule)
 
             totalFee += GetHighestTollFee(currentIntervalTimestamps);
             
-            if (!currentIntervalTimestamps.Contains(timestamp))
-                totalFee += GetTollFee(timestamp);
-
             currentIntervalTimestamps.Clear();
+            currentIntervalTimestamps.Add(timestamp);
             intervalStart = timestamp;
         }
 

@@ -9,7 +9,7 @@ public class TollCalculatorTests
     private static TollCalculator CreateSut() => new(new TollFeeSchedule(new ExternalHolidayProvider(new SwedenPublicHoliday())));
     
     [Test]
-    public void Highest_toll_within_the_hour_is_applied()
+    public void GetTollFee_Highest_toll_within_the_hour_is_applied()
     {
         var car = new Car();
 
@@ -28,7 +28,7 @@ public class TollCalculatorTests
     }
     
     [TestCase("Car")]
-    public void Maximum_toll_fee_per_day_60(string vehicleType)
+    public void GetTollFee_Maximum_toll_fee_per_day_60(string vehicleType)
     {
         var vehicle = VehicleFactory.Create(vehicleType);
 
@@ -64,7 +64,7 @@ public class TollCalculatorTests
     [TestCase("DiplomaticVehicle")]
     [TestCase("ForeignVehicle")]
     [TestCase("MilitaryVehicle")]
-    public void Toll_free_vehicles(string vehicleName)
+    public void GetTollFee_free_vehicles(string vehicleName)
     {
         var vehicle = VehicleFactory.Create(vehicleName);
 
@@ -88,7 +88,7 @@ public class TollCalculatorTests
     
     [TestCase("Car")]
     [TestCase("Tractor")]
-    public void Toll_free_on_weekends(string vehicleName)
+    public void GetTollFee_free_on_weekends(string vehicleName)
     {
         var vehicle = VehicleFactory.Create(vehicleName);
 
@@ -111,7 +111,7 @@ public class TollCalculatorTests
     }
     
     [Test]
-    public void TollFee_outside_interval_hour()
+    public void GetTollFee_outside_interval_hour()
     {
         var car = new Car();
 
@@ -130,7 +130,27 @@ public class TollCalculatorTests
     }
 
     [Test]
-    public void EmptyDates()
+    public void TollFee_Multiple_interval_groups_should_be_within_the_same_hour()
+    {
+        var car = new Car();
+
+        DateTime[] dates =
+        [
+            new(2026, 5, 29, 6, 0, 0),
+            new(2026, 5, 29, 6, 30, 0),
+            new(2026, 5, 29, 7, 30, 0),
+            new(2026, 5, 29, 7, 45, 0)
+        ];
+
+        var sut = CreateSut();
+
+        var tollFee = sut.GetTollFee(car, dates);
+
+        Assert.That(tollFee, Is.EqualTo(31));
+    }
+
+    [Test]
+    public void GetTollFee_EmptyDates()
     {
         var sut = CreateSut();
         
@@ -140,7 +160,7 @@ public class TollCalculatorTests
     }
     
     [Test]
-    public void Dates_in_weird_order_should_give_same_fee_as_sorted()
+    public void GetTollFee_Dates_in_weird_order_should_give_same_fee_as_sorted()
     {
         var car = new Car();
 
@@ -169,7 +189,7 @@ public class TollCalculatorTests
     }
     
     [Test]
-    public void MultipleDays()
+    public void GetTollFee_MultipleDays()
     {
         var car = new Car();
 
@@ -193,17 +213,17 @@ public class TollCalculatorTests
             
             new(2026, 5, 29, 6, 0, 0),
             new(2026, 5, 29, 6, 30, 0),
-            new(2026, 5, 29, 7, 0, 0),
+            new(2026, 5, 29, 6, 59, 59),
         ];
         var sut = CreateSut();
         
         var tollFee = sut.GetTollFee(car, dates);
         
-        Assert.That(tollFee, Is.EqualTo(78));
+        Assert.That(tollFee, Is.EqualTo(73));
     }
 
     [Test]
-    public void TollFee_single_date_should_be_toll()
+    public void GetTollFee_single_date_should_be_toll()
     {
         var car = new Car();
         var date = new DateTime(2026, 5, 27, 8, 0, 0);
@@ -215,7 +235,7 @@ public class TollCalculatorTests
     }
 
     [Test]
-    public void TollFee_single_date_on_weekend()
+    public void GetTollFee_single_date_on_weekend()
     {
         var car = new Car();
         var date = new DateTime(2026, 5, 31, 6, 0, 0);
@@ -232,7 +252,7 @@ public class TollCalculatorTests
     [TestCase("DiplomaticVehicle")]
     [TestCase("ForeignVehicle")]
     [TestCase("MilitaryVehicle")]
-    public void TollFee_single_date_toll_free_vehicles(string vehicleName)
+    public void GetTollFee_single_date_toll_free_vehicles(string vehicleName)
     {
         var vehicle = VehicleFactory.Create(vehicleName);
         var date = new DateTime(2026, 5, 29, 6, 0, 0);

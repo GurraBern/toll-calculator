@@ -128,9 +128,27 @@ public class TollCalculatorTests
 
         Assert.That(tollFee, Is.EqualTo(31));
     }
+    
+    [Test]
+    public void GetTollFee_within_hour_then_take_highest_fee()
+    {
+        var car = new Car();
+
+        DateTime[] dates =
+        [
+            new(2026, 5, 29, 6, 30, 0),
+            new(2026, 5, 29, 7, 29, 0),
+        ];
+
+        var sut = CreateSut();
+
+        var tollFee = sut.GetTollFee(car, dates);
+
+        Assert.That(tollFee, Is.EqualTo(18));
+    }
 
     [Test]
-    public void TollFee_Multiple_interval_groups_should_be_within_the_same_hour()
+    public void GetTollFee_Multiple_interval_groups_should_be_within_the_same_hour()
     {
         var car = new Car();
 
@@ -244,6 +262,25 @@ public class TollCalculatorTests
         var tollFee = sut.GetTollFee(car, date);
         
         Assert.That(tollFee, Is.EqualTo(0));
+    }
+
+    [Test]
+    public void GetTollFee_interval_starts_on_toll_free_time_still_charges_highest_in_window()
+    {
+        var car = new Car();
+
+        DateTime[] dates =
+        [
+            new(2026, 5, 29, 5, 30, 0),
+            new(2026, 5, 29, 6, 0, 0),
+            new(2026, 5, 29, 6, 15, 0),
+        ];
+
+        var sut = CreateSut();
+
+        var tollFee = sut.GetTollFee(car, dates);
+
+        Assert.That(tollFee, Is.EqualTo(8));
     }
 
     [TestCase("Motorbike")]

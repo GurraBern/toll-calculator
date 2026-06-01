@@ -1,7 +1,14 @@
+using PublicHoliday;
+using TollCalculator.Holidays;
+
 namespace TollCalculator.Tests.UnitTests;
 
 public class TollFeeScheduleTests
 {
+    private static readonly DateOnly TestDate = new(2026, 6, 1);
+    
+    private static TollFeeSchedule CreateSut() => new(new ExternalHolidayProvider(new SwedenPublicHoliday()));
+    
     [TestCase(0, 0, 0, 0)]
     [TestCase(5, 59, 59, 0)]
     [TestCase(6, 0, 0, 8)]
@@ -26,9 +33,10 @@ public class TollFeeScheduleTests
     [TestCase(23, 59, 59, 0)]
     public void GetTollFee_When_Given_Specific_Time_Returns_Expected_Fee(int hour, int minute, int second, int expectedFee)
     {
-        var time = new TimeOnly(hour, minute, second);
-
-        var fee = TollFeeSchedule.GetTollFee(time);
+        var date = TestDate.ToDateTime(new TimeOnly(hour, minute, second));
+        var sut = CreateSut();
+        
+        var fee = sut.GetTollFee(date);
 
         Assert.That(fee, Is.EqualTo(expectedFee));
     }

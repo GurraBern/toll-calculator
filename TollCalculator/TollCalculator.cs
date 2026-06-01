@@ -53,25 +53,16 @@ public class TollCalculator(TollFeeSchedule tollFeeSchedule)
     private int GetHighestTollFee(List<DateTime> timestamps)
     {
         return timestamps
-            .Select(GetTollFee)
+            .Select(tollFeeSchedule.GetTollFee)
             .DefaultIfEmpty()
             .Max();
     }
 
-    private int GetTollFee(DateTime date)
-    {
-        if (tollFeeSchedule.IsTollFreeDate(date))
-            return 0;
-
-        var time = TimeOnly.FromDateTime(date);
-        return TollFeeSchedule.GetTollFee(time);       
-    }
-    
     public int GetTollFee(IVehicle vehicle, DateTime date)
     { 
         if (vehicle.IsTollFree())
             return 0;
         
-        return GetTollFee(date);
+        return tollFeeSchedule.GetTollFee(date);
     }
 }

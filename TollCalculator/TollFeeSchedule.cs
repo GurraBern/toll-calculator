@@ -17,8 +17,13 @@ public class TollFeeSchedule(IHolidayProvider holidayProvider)
         (new TimeOnly(18, 0),  new TimeOnly(18, 30),  8)
     ];
     
-    public static int GetTollFee(TimeOnly time)
+    public int GetTollFee(DateTime date)
     {
+        if (IsTollFreeDate(date))
+            return 0;
+        
+        var time = TimeOnly.FromDateTime(date);
+        
         foreach (var (start, end, fee) in FeeSchedule)
         {
             if (time >= start && time < end) 
@@ -28,7 +33,7 @@ public class TollFeeSchedule(IHolidayProvider holidayProvider)
         return 0;
     }
     
-    public bool IsTollFreeDate(DateTime date)
+    private bool IsTollFreeDate(DateTime date)
     {
         if (IsWeekend(date.DayOfWeek)) 
             return true;

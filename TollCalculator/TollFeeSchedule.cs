@@ -1,3 +1,5 @@
+using TollCalculator.Holidays;
+
 namespace TollCalculator;
 
 public class TollFeeSchedule(IHolidayProvider holidayProvider)

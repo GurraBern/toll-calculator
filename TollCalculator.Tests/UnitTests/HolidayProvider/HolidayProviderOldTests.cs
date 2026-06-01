@@ -1,3 +1,5 @@
+using TollCalculator.Holidays;
+
 namespace TollCalculator.Tests.UnitTests.HolidayProvider;
 
 [TestFixture]

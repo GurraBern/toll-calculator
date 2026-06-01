@@ -1,4 +1,4 @@
-namespace TollCalculator;
+namespace TollCalculator.Holidays;
 
 public class HolidayProviderOld : IHolidayProvider
 {

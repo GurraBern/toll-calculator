@@ -1,6 +1,6 @@
 using PublicHoliday;
 
-namespace TollCalculator;
+namespace TollCalculator.Holidays;
 
 public class ExternalHolidayProvider(IPublicHolidays holidays) : IHolidayProvider
 {
